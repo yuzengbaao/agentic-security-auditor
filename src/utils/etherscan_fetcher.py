@@ -201,5 +201,19 @@ if __name__ == "__main__":
 
 
 def fetch_contract_code(address, chain="ethereum"):
-    """Main entry point: fetch contract source code via Etherscan API V2."""
-    return fetch_contract_etherscan_api(address, chain=chain)
+    """Main entry point: fetch contract source code via Etherscan API V2.
+    
+    Returns dict with keys: success, code, contract_name, compiler_version, chain
+    """
+    result = fetch_contract_etherscan_api(address, chain=chain)
+    if "error" in result:
+        return {"success": False, "error": result["error"]}
+    
+    return {
+        "success": True,
+        "code": result.get("source_code", ""),
+        "contract_name": result.get("contract_name", "Unknown"),
+        "compiler_version": result.get("compiler_version", "Unknown"),
+        "chain": chain,
+        "address": address,
+    }
