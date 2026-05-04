@@ -1,0 +1,5 @@
+google-adk
+google-cloud-aiplatform
+pydantic
+requests
+pytest
