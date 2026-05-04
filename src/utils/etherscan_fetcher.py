@@ -19,7 +19,6 @@ EXPLORERS = {
 
 
 def fetch_contract_from_explorer(
-    from playwright.sync_api import sync_playwright
     address: str,
     chain: str = "ethereum",
     headless: bool = True
@@ -29,6 +28,7 @@ def fetch_contract_from_explorer(
     Returns:
         {"source_code": "...", "contract_name": "...", "compiler_version": "..."}
     """
+    from playwright.sync_api import sync_playwright
     if chain not in EXPLORERS:
         return {"error": f"Unsupported chain: {chain}"}
     
