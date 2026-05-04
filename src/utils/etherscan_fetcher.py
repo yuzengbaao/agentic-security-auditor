@@ -196,3 +196,8 @@ if __name__ == "__main__":
         print(f"✅ Contract: {result['contract_name']}")
         print(f"   Source code length: {len(result['source_code'])} chars")
         print(f"   First 200 chars: {result['source_code'][:200]}")
+
+
+def fetch_contract_code(address, chain="ethereum"):
+    """Main entry point: fetch contract source code via Etherscan API V2."""
+    return fetch_contract_etherscan_api(address, chain=chain)
