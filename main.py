@@ -5,6 +5,7 @@ Usage:
     python main.py --file examples/vulnerable.sol
     python main.py --code "pragma solidity ..."
     python main.py --address 0x... --chain ethereum
+    python main.py --address 0x... --chain ethereum --no-ai
 """
 
 import argparse
@@ -19,16 +20,19 @@ from tools.audit_tools import analyze_contract_code, calculate_risk_score, gener
 from utils.etherscan_fetcher import fetch_contract_etherscan_api
 
 
-def load_contract(source_type: str, source_value: str) -> str:
+def load_contract(source_type: str, source_value: str, chain: str = "ethereum") -> str:
     """Load contract code from various sources."""
     if source_type == "file":
         return Path(source_value).read_text()
     elif source_type == "code":
         return source_value
     elif source_type == "address":
-        # For now, use static analysis placeholder
-        # In production, this would fetch from Etherscan
-        raise NotImplementedError("Address fetching requires API key configuration")
+        print(f"🔍 Fetching contract from Etherscan ({chain})...")
+        result = fetch_contract_etherscan_api(source_value, chain=chain)
+        if "error" in result:
+            raise RuntimeError(f"Failed to fetch contract: {result['error']}")
+        print(f"   ✅ Contract: {result['contract_name']} ({len(result['source_code'])} chars)")
+        return result["source_code"]
     else:
         raise ValueError(f"Unknown source type: {source_type}")
 
@@ -51,7 +55,7 @@ def run_audit(code: str, use_ai: bool = True) -> dict:
     
     # Generate combined report
     print("📊 Step 3: Generating Report")
-    static_report = generate_report(static_result['findings'], "VulnerableBank")
+    static_report = generate_report(static_result['findings'], "Contract")
     
     return {
         "static": static_result,
@@ -66,7 +70,7 @@ def main():
     parser.add_argument("--file", help="Path to Solidity contract file")
     parser.add_argument("--code", help="Solidity code string")
     parser.add_argument("--address", help="Deployed contract address")
-    parser.add_argument("--chain", default="ethereum", help="Blockchain (ethereum, bsc, polygon)")
+    parser.add_argument("--chain", default="ethereum", help="Blockchain (ethereum, bsc, polygon, arbitrum, optimism, base)")
     parser.add_argument("--no-ai", action="store_true", help="Skip AI audit (static only)")
     parser.add_argument("--output", default="audit_report.md", help="Output report path")
     args = parser.parse_args()
@@ -77,11 +81,11 @@ def main():
     elif args.code:
         code = load_contract("code", args.code)
     elif args.address:
-        print("⚠️ Address audit requires Etherscan API key. Using placeholder.")
-        code = f"// Contract at {args.address} on {args.chain}\n// Fetch not implemented"
+        code = load_contract("address", args.address, chain=args.chain)
     else:
         print("Usage: python main.py --file contract.sol")
         print("       python main.py --code 'pragma solidity ...'")
+        print("       python main.py --address 0x... --chain ethereum")
         sys.exit(1)
     
     # Run audit

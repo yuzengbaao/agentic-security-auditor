@@ -1,6 +1,5 @@
 """Fetch contract source code from Etherscan-like block explorers."""
 
-import os
 import re
 from typing import Optional, Dict
 
@@ -105,48 +104,31 @@ def fetch_contract_etherscan_api(
     api_key: Optional[str] = None,
     chain: str = "ethereum"
 ) -> Dict[str, str]:
-    """Fetch contract using Etherscan API V2.
-    
-    Etherscan API V2 docs: https://docs.etherscan.io/v2-migration
-    """
+    """Fetch contract using Etherscan API (if key available)."""
     import requests
     
-    # Chain ID mapping for Etherscan V2
-    chain_ids = {
-        "ethereum": "1",
-        "bsc": "56",
-        "polygon": "137",
-        "arbitrum": "42161",
-        "optimism": "10",
-        "base": "8453",
+    api_urls = {
+        "ethereum": "https://api.etherscan.io/api",
+        "bsc": "https://api.bscscan.com/api",
+        "polygon": "https://api.polygonscan.com/api",
+        "arbitrum": "https://api.arbiscan.io/api",
+        "optimism": "https://api-optimistic.etherscan.io/api",
+        "base": "https://api.basescan.org/api",
     }
     
-    if chain not in chain_ids:
+    if chain not in api_urls:
         return {"error": f"Unsupported chain: {chain}"}
     
-    # Load API key from file if not provided
-    if not api_key:
-        api_key_path = "/root/.etherscan_api_key"
-        if os.path.exists(api_key_path):
-            with open(api_key_path) as f:
-                api_key = f.read().strip()
-    
-    if not api_key:
-        return {"error": "Etherscan API key not found. Create one at https://etherscan.io/myapikey"}
-    
-    # Etherscan API V2 endpoint
-    url = "https://api.etherscan.io/v2/api"
-    
     params = {
-        "chainid": chain_ids[chain],
         "module": "contract",
         "action": "getsourcecode",
         "address": address,
-        "apikey": api_key,
     }
+    if api_key:
+        params["apikey"] = api_key
     
     try:
-        response = requests.get(url, params=params, timeout=30)
+        response = requests.get(api_urls[chain], params=params, timeout=30)
         data = response.json()
         
         if data.get("status") == "1" and data.get("result"):
