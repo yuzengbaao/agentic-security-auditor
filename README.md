@@ -42,7 +42,7 @@ python main.py --address 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D --chain ethe
 | **Contract Fetching** | Etherscan API V2 | ✅ 6 chains |
 | **Vulnerability DB** | SWC Registry | ✅ 10 categories |
 | **Multi-Model** | Claude/GPT/Gemini/DeepSeek | ⚠️ DeepSeek only (Claude/GPT/Gemini 403) |
-| **Cloud Deploy** | Cloud Run ✅
+| **Cloud Deploy** | Cloud Run | ✅ Active |
 
 ---
 
@@ -121,7 +121,7 @@ $ python main.py --file examples/vulnerable.sol
 | Fuzzing | Echidna 2.2.5 (module ready) |
 | Blockchain | Etherscan API V2 |
 | Language | Python 3.10 |
-| Deployment | Cloud Run ✅
+| Deployment | Cloud Run |
 
 ---
 
@@ -151,6 +151,16 @@ pytest tests/test_audit_tools.py -v
 ```
 
 **Results**: 7/7 tests passing
+
+---
+
+## 🌍 Real-World Audits
+
+| Contract | Chain | Risk Score | Findings |
+|----------|-------|------------|----------|
+| WETH (Wrapped Ether) | Ethereum | 13/100 | 3 |
+| Uniswap V2 Router | Ethereum | 12/100 | 2 |
+| VulnerableBank (test) | Local | 21/100 | 7 |
 
 ---
 
@@ -186,8 +196,9 @@ wget https://github.com/yuzengbaao/agentic-security-auditor/releases/download/v0
 | Issue | Status | Workaround |
 |-------|--------|------------|
 | Claude/GPT/Gemini 403 | 🔴 | Use DeepSeek v3.1 |
-| Cloud Run ✅
 | Echidna needs test props | 🟡 | Module ready, not integrated |
+
+**Cloud Run status**: On-chain audit is working in Cloud Run revision `00007`.
 
 ---
 
@@ -199,9 +210,10 @@ wget https://github.com/yuzengbaao/agentic-security-auditor/releases/download/v0
 - [x] Etherscan API V2 integration
 - [x] Slither production pipeline
 - [x] 4-model comparison testing
-- [ ] Cloud Run ✅
-- [ ] Demo video recording
-- [ ] DevPost submission page
+- [x] Cloud Run deployment
+- [x] Demo video recording
+- [x] On-chain audit via Cloud Run
+- [ ] DevPost submission
 
 ---
 
