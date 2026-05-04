@@ -6,7 +6,6 @@ import re
 from typing import Optional, Dict
 
 # Browser automation imports
-from playwright.sync_api import sync_playwright
 
 # Common block explorer URLs
 EXPLORERS = {
@@ -20,6 +19,7 @@ EXPLORERS = {
 
 
 def fetch_contract_from_explorer(
+    from playwright.sync_api import sync_playwright
     address: str,
     chain: str = "ethereum",
     headless: bool = True
