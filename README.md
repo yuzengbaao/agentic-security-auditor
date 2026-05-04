@@ -42,7 +42,7 @@ python main.py --address 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D --chain ethe
 | **Contract Fetching** | Etherscan API V2 | ✅ 6 chains |
 | **Vulnerability DB** | SWC Registry | ✅ 10 categories |
 | **Multi-Model** | Claude/GPT/Gemini/DeepSeek | ⚠️ DeepSeek only (Claude/GPT/Gemini 403) |
-| **Cloud Deploy** | Cloud Run | ❌ Needs billing |
+| **Cloud Deploy** | Cloud Run ✅
 
 ---
 
@@ -121,7 +121,7 @@ $ python main.py --file examples/vulnerable.sol
 | Fuzzing | Echidna 2.2.5 (module ready) |
 | Blockchain | Etherscan API V2 |
 | Language | Python 3.10 |
-| Deployment | Cloud Run (pending billing) |
+| Deployment | Cloud Run ✅
 
 ---
 
@@ -186,7 +186,7 @@ wget https://github.com/yuzengbaao/agentic-security-auditor/releases/download/v0
 | Issue | Status | Workaround |
 |-------|--------|------------|
 | Claude/GPT/Gemini 403 | 🔴 | Use DeepSeek v3.1 |
-| Cloud Run needs billing | 🟡 | Local demo sufficient |
+| Cloud Run ✅
 | Echidna needs test props | 🟡 | Module ready, not integrated |
 
 ---
@@ -199,7 +199,7 @@ wget https://github.com/yuzengbaao/agentic-security-auditor/releases/download/v0
 - [x] Etherscan API V2 integration
 - [x] Slither production pipeline
 - [x] 4-model comparison testing
-- [ ] Cloud Run deployment (pending billing)
+- [ ] Cloud Run ✅
 - [ ] Demo video recording
 - [ ] DevPost submission page
 
@@ -212,3 +212,40 @@ MIT License — See [LICENSE](LICENSE)
 ---
 
 **Built with ❤️ by 虾总 (Xia Zong) for Google Cloud Rapid Agent Hackathon 2026**
+
+---
+
+## ☁️ Cloud Run Deployment
+
+**Service URL**: https://agentic-security-auditor-270892092095.us-central1.run.app
+
+### API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/health` | GET | Health check |
+| `/` | GET | Service info |
+| `/audit` | POST | Audit smart contract (JSON body: `{code: "..."}` or `{address: "0x...", chain: "ethereum"}`) |
+
+### Example: Audit via API
+
+```bash
+curl -X POST https://agentic-security-auditor-270892092095.us-central1.run.app/audit \
+  -H "Content-Type: application/json" \
+  -d '{"code":"pragma solidity ^0.8.0; contract Test { ... }"}'
+```
+
+### Response Format
+
+```json
+{
+  "status": "success",
+  "risk_score": 21,
+  "total_findings": 7,
+  "results": {
+    "static": { "findings": [...], "risk_score": 21 },
+    "slither": { "success": true, "findings": [...] },
+    "ai": { "enabled": true, "report": "..." }
+  }
+}
+```
