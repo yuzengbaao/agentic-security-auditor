@@ -1,5 +1,6 @@
 """Fetch contract source code from Etherscan-like block explorers."""
 
+import json
 import os
 import re
 from typing import Optional, Dict
@@ -155,7 +156,6 @@ def fetch_contract_etherscan_api(
             
             # Handle multi-file contracts (JSON wrapped)
             if source.startswith("{"):
-                import json
                 try:
                     parsed = json.loads(source)
                     if "sources" in parsed:
