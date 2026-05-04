@@ -1,6 +1,6 @@
 """Tests for audit tools"""
 import sys
-sys.path.insert(0, '/root/projects/gc-rapid-agent/src')
+sys.path.insert(0, 'src')
 from tools.audit_tools import analyze_contract_code, check_reentrancy, check_access_control
 
 def test_analyze_contract_code():
