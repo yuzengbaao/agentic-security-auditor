@@ -127,6 +127,8 @@ def fetch_contract_etherscan_api(
     
     # Load API key from file if not provided
     if not api_key:
+        api_key = os.environ.get("ETHERSCAN_API_KEY")
+    if not api_key:
         api_key_path = "/root/.etherscan_api_key"
         if os.path.exists(api_key_path):
             with open(api_key_path) as f:
