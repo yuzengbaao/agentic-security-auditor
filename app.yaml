@@ -1,0 +1,40 @@
+# Cloud Run Deployment Configuration
+# For Google Cloud Rapid Agent Hackathon
+
+service: agentic-security-auditor
+runtime: python39
+
+env_variables:
+  OPENROUTER_API_KEY: "${OPENROUTER_API_KEY}"
+  ETHERSCAN_API_KEY: "${ETHERSCAN_API_KEY}"
+  GCP_PROJECT_ID: "gen-lang-client-0679032909"
+
+# Minimum instances for hackathon demo
+min_instances: 0
+max_instances: 5
+
+# Resource allocation
+resources:
+  cpu: 1
+  memory_gb: 2
+  disk_size_gb: 10
+
+# Health check
+liveness_check:
+  path: "/health"
+  check_interval_sec: 30
+  timeout_sec: 4
+  failure_threshold: 2
+
+readiness_check:
+  path: "/health"
+  check_interval_sec: 5
+  timeout_sec: 4
+  failure_threshold: 2
+
+# Automatic scaling
+automatic_scaling:
+  target_cpu_utilization: 0.6
+  target_throughput_utilization: 0.6
+  max_concurrent_requests: 50
+  max_pending_latency: 10s
