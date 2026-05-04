@@ -1,0 +1,17 @@
+# Git ignore for Agentic Security Auditor
+__pycache__/
+*.pyc
+*.pyo
+.env
+.venv/
+venv/
+key.json
+*.key
+*.pem
+.DS_Store
+*.log
+/tmp/
+/reports/
+*.mp4
+*.mov
+node_modules/
