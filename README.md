@@ -1,138 +1,214 @@
 # Agentic Security Auditor
 
-**AI-Powered Smart Contract & Code Security Scanner**
+**AI-powered smart contract security auditing system for Google Cloud Rapid Agent Hackathon 2026.**
 
-Built for [Google Cloud Rapid Agent Hackathon 2026](https://rapid-agent.devpost.com/) — *Building Agents for Real-World Challenges*
-
----
-
-## 🎯 What It Does
-
-Agentic Security Auditor is an autonomous AI agent that performs **end-to-end smart contract security audits**:
-
-1. **Input**: Contract code (Solidity/Vyper), GitHub repo, or deployed address
-2. **Analysis**: Multi-layered security scanning — static analysis + dynamic detection + browser-based interaction verification
-3. **Output**: Structured audit report with severity ratings, proof-of-concept traces, and remediation code
-
-### Key Differentiators
-- 🧠 **Multi-Agent Architecture**: Task Receiver → Security Auditor → Report Generator (3 agents orchestrated via Google ADK)
-- 🔗 **MCP Integration**: Plugs into existing audit toolchains (Slither, Mythril, custom scripts via browser automation)
-- 🌐 **Browser-Powered**: Uses anti-detection browser (v3.0) for live vulnerability verification on testnets
-- 📊 **Evidence-Anchored**: Every finding includes reproducible traces, not just pattern matching
+[![GitHub](https://img.shields.io/badge/GitHub-yuzengbaao-blue)](https://github.com/yuzengbaao/agentic-security-auditor)
 
 ---
 
-## 🏗️ Architecture
+## 🎯 Overview
 
-```
-┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
-│  Task Receiver  │────▶│ Security Auditor │────▶│ Report Generator│
-│    (ADK Agent)  │     │   (ADK Agent)    │     │   (ADK Agent)   │
-└────────┬────────┘     └────────┬─────────┘     └─────────────────┘
-         │                       │
-         ▼                       ▼
-┌─────────────────┐     ┌──────────────────┐
-│ Browser v3.0    │     │ Audit Toolchain  │
-│ (Code fetch,    │     │ (Static analysis,│
-│  TX simulation) │     │  Reentrancy check│
-└─────────────────┘     │  Access control) │
-                         └──────────────────┘
-```
+Agentic Security Auditor is a multi-agent system that combines **static analysis** (Slither), **AI-powered inference** (OpenRouter DeepSeek), and **blockchain data fetching** (Etherscan API V2) to deliver production-grade smart contract security audits.
 
-**Core Stack**: Google Vertex AI Agent Builder + ADK + Gemini 1.5 Pro + MCP + Cloud Run
+**Key Innovation**: Multi-model AI + deterministic static analysis — AI explains vulnerabilities while Slither guarantees discovery accuracy.
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.10+
-- Google Cloud SDK (`gcloud`)
-- GCP project with Vertex AI API enabled
-
-### Installation
 ```bash
-# Clone repo
+# Clone repository
 git clone https://github.com/yuzengbaao/agentic-security-auditor.git
 cd agentic-security-auditor
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Set up GCP authentication
-gcloud auth application-default login
+# Run audit on local contract
+python main.py --file examples/vulnerable.sol
 
-# Run the agent
-python src/agent.py --contract-code ./examples/vulnerable.sol
+# Run audit on deployed contract
+python main.py --address 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D --chain ethereum
 ```
 
-### Demo
+---
+
+## 📊 Features
+
+| Feature | Technology | Status |
+|---------|-----------|--------|
+| **Static Analysis** | Slither (Trail of Bits) | ✅ Production-grade |
+| **AI Audit** | OpenRouter DeepSeek v3.1 | ✅ Active |
+| **Contract Fetching** | Etherscan API V2 | ✅ 6 chains |
+| **Vulnerability DB** | SWC Registry | ✅ 10 categories |
+| **Multi-Model** | Claude/GPT/Gemini/DeepSeek | ⚠️ DeepSeek only (Claude/GPT/Gemini 403) |
+| **Cloud Deploy** | Cloud Run | ❌ Needs billing |
+
+---
+
+## 🏗️ Architecture
+
+```
+Input (File / Code / Address)
+  ↓
+┌─────────────────┐
+│  Task Receiver  │  Parse input type
+└─────────────────┘
+  ↓
+┌─────────────────┐
+│ Static Analysis │  Slither control/data flow
+└─────────────────┘
+  ↓
+┌─────────────────┐
+│ Vulnerability DB│  SWC mapping + CWE refs
+└─────────────────┘
+  ↓
+┌─────────────────┐
+│  AI Auditor     │  DeepSeek v3.1 — fix suggestions
+└─────────────────┘
+  ↓
+┌─────────────────┐
+│ Report Generator│  Markdown with severity scoring
+└─────────────────┘
+  ↓
+Output: audit_report.md
+```
+
+---
+
+## 📸 Screenshots
+
+### Terminal Execution
 ```bash
-# Audit a sample contract
-python src/agent.py --github-repo https://github.com/example/vulnerable-contract
+$ python main.py --file examples/vulnerable.sol
 
-# Output: structured_report.md with findings + remediation
+🚀 Agentic Security Auditor (Production)
+   Contract size: 2088 chars
+
+🔍 Phase 1: Static Pattern Analysis
+   Found 4 issues (Risk Score: 26)
+
+🔬 Phase 2: Slither Control Flow Analysis
+   Found 8 issues via Slither
+
+🤖 Phase 3: AI-Powered Audit (OpenRouter)
+   AI report: 4499 chars
+
+📊 Phase 4: Report Generation
+
+✅ Report saved to: audit_report.md
+📊 Final Risk Score: 93/100
+🔍 Static findings: 4
+🔬 Slither findings: 8
+🤖 AI audit: ENABLED
+```
+
+### Sample Report Output
+- **Executive Summary**: Risk Score 93/100, 12 total findings
+- **Critical Findings**: Reentrancy, Unprotected selfdestruct
+- **SWC References**: SWC-107 (Reentrancy), SWC-106 (Suicidal)
+- **Fix Code**: Checks-Effects-Interactions pattern + ReentrancyGuard
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Tool |
+|-----------|------|
+| Framework | Google ADK v1.32 |
+| AI Models | OpenRouter (DeepSeek v3.1) |
+| Static Analysis | Slither 0.11.5 |
+| Fuzzing | Echidna 2.2.5 (module ready) |
+| Blockchain | Etherscan API V2 |
+| Language | Python 3.10 |
+| Deployment | Cloud Run (pending billing) |
+
+---
+
+## 📋 Usage Examples
+
+### Example 1: Local File Audit
+```bash
+python main.py --file examples/vulnerable.sol --output report.md
+```
+
+### Example 2: Live Contract Audit
+```bash
+python main.py --address 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D --chain ethereum
+```
+
+### Example 3: Skip AI (Static + Slither only)
+```bash
+python main.py --file contract.sol --no-ai
 ```
 
 ---
 
-## 📁 Project Structure
+## 🧪 Testing
 
+```bash
+pytest tests/test_audit_tools.py -v
 ```
-agentic-security-auditor/
-├── src/
-│   ├── agent.py              # ADK multi-agent orchestrator
-│   ├── tools/
-│   │   ├── audit_tools.py    # Core security analysis tools
-│   │   ├── browser_tools.py  # Browser automation integration
-│   │   └── mcp_tools.py      # MCP protocol adapters
-│   └── prompts/
-│       └── auditor_prompt.md # Core agent prompt
-├── tests/
-│   └── test_audit_tools.py   # Test suite (pytest)
-├── docs/
-│   ├── architecture.md       # Technical design
-│   └── deployment.md         # Cloud Run deployment guide
-├── examples/
-│   └── vulnerable.sol        # Demo contract for testing
-└── README.md
+
+**Results**: 7/7 tests passing
+
+---
+
+## 🏆 Hackathon Context
+
+**Event**: Google Cloud Rapid Agent Hackathon 2026  
+**Track**: Building Agents for Real-World Challenges  
+**Prize Pool**: $60,000  
+**Submission Opens**: May 5, 2026 18:00 UTC  
+**Deadline**: Jun 12, 2026  
+
+**Judging Criteria** (expected):
+- Innovation and creativity
+- Technical implementation
+- Real-world applicability
+- Demo quality
+
+---
+
+## 📦 GitHub Release
+
+**Latest**: [v0.2.1-audit-models](https://github.com/yuzengbaao/agentic-security-auditor/releases/tag/v0.2.1-audit-models)
+
+Download test data package:
+```bash
+wget https://github.com/yuzengbaao/agentic-security-auditor/releases/download/v0.2.1-audit-models/audit_test_data_package.zip
 ```
 
 ---
 
-## 🛠️ Tech Stack
+## ⚠️ Known Issues
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| **Agent Framework** | Google ADK (Agent Development Kit) | Multi-agent orchestration |
-| **LLM** | Gemini 1.5 Pro/Ultra | Code understanding, vulnerability reasoning |
-| **Agent Builder** | Vertex AI Agent Builder | Visual prompt management, tool registry |
-| **MCP** | Model Control Plane | External tool integration |
-| **Browser** | Playwright + anti-detection (v3.0) | Live contract interaction, TX simulation |
-| **Static Analysis** | Slither, Mythril (via subprocess) | Solidity vulnerability detection |
-| **Deployment** | Cloud Run | Agent service hosting |
-| **Storage** | Cloud Storage | Audit reports, screenshots |
+| Issue | Status | Workaround |
+|-------|--------|------------|
+| Claude/GPT/Gemini 403 | 🔴 | Use DeepSeek v3.1 |
+| Cloud Run needs billing | 🟡 | Local demo sufficient |
+| Echidna needs test props | 🟡 | Module ready, not integrated |
 
 ---
 
-## 🎥 Demo Video
+## 🔮 Roadmap
 
-*[Coming soon — 3-minute end-to-end demo]*
-
-Planned flow:
-1. Input: Paste vulnerable Solidity code
-2. Analysis: Agent runs static analysis + browser verification
-3. Output: Markdown report with Critical/High/Medium findings
-4. Bonus: One-click remediation code generation
+- [x] Project skeleton + GitHub repo
+- [x] Core Agent development (3-agent pipeline)
+- [x] OpenRouter integration
+- [x] Etherscan API V2 integration
+- [x] Slither production pipeline
+- [x] 4-model comparison testing
+- [ ] Cloud Run deployment (pending billing)
+- [ ] Demo video recording
+- [ ] DevPost submission page
 
 ---
 
 ## 📄 License
 
-MIT License — Built for Google Cloud Rapid Agent Hackathon 2026
+MIT License — See [LICENSE](LICENSE)
 
 ---
 
-**Author**: [zengbao yu](https://devpost.com/yuzengbaao) | GitHub: [@yuzengbaao](https://github.com/yuzengbaao)
-
-**Related Projects**: [AuditCraft](https://devpost.com/software/auditcraft-smart-contract-security-sandbox) | [FIND EVIL!](https://devpost.com/software/self-correcting-dfir-agent-with-evidence-anchored-findings)
+**Built with ❤️ by 虾总 (Xia Zong) for Google Cloud Rapid Agent Hackathon 2026**
