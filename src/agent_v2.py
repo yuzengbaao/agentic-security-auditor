@@ -275,6 +275,14 @@ class ADKSecurityAuditor:
             session_service=self.session_service
         )
         
+        # Create session explicitly
+        await self.session_service.create_session(
+            app_name=self.app_name,
+            user_id="audit_user",
+            state={},
+            session_id=session_id
+        )
+        
         # Create content object
         content = types.Content(
             role="user",
