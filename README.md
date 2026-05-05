@@ -4,6 +4,7 @@
 
 [![GitHub](https://img.shields.io/badge/GitHub-yuzengbaao-blue)](https://github.com/yuzengbaao/agentic-security-auditor)
 [![Cloud Run](https://img.shields.io/badge/Cloud%20Run-Live-green)](https://agentic-security-auditor-270892092095.us-central1.run.app)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
 
 ---
 
@@ -30,13 +31,21 @@ curl -X POST https://agentic-security-auditor-270892092095.us-central1.run.app/v
   -d '{"code": "pragma solidity ^0.8.0; contract Test { ... }"}'
 ```
 
-### Local
+### Local Development
 ```bash
+# 1. Clone repository
 git clone https://github.com/yuzengbaao/agentic-security-auditor.git
 cd agentic-security-auditor
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# Run ADK multi-agent audit
+# 3. Set environment variables
+export GOOGLE_GENAI_USE_VERTEXAI=true
+export GOOGLE_CLOUD_PROJECT=gen-lang-client-0679032909
+export GOOGLE_CLOUD_LOCATION=us-central1
+
+# 4. Run ADK multi-agent audit
 python src/agent_v2.py --address 0x... --chain ethereum
 python src/agent_v2.py --file examples/vulnerable.sol
 ```
@@ -131,25 +140,42 @@ POST /v2/audit/code
 
 ---
 
-## 🧪 Testing
+## 🧪 Testing & Validation
 
+### Unit Tests
 ```bash
-# Unit tests
 pytest tests/ -v
+```
 
-# ADK agent test
+### ADK Agent Test
+```bash
 python3 -c "
 import sys; sys.path.insert(0, 'src')
 from agent_v2 import scanner_agent, static_analyzer_agent
-print('Scanner:', scanner_agent.name, scanner_agent.model)
+print('Scanner:', scanner_agent.name, scanner_analyzer_agent.model)
 print('Static:', static_analyzer_agent.name, static_analyzer_agent.model)
 "
+```
 
-# API test
+### API Integration Test
+```bash
+# Test live endpoint
 curl -X POST https://agentic-security-auditor-270892092095.us-central1.run.app/v2/audit/code \
   -H "Content-Type: application/json" \
   -d '{"code":"pragma solidity ^0.8.0; contract T { uint x; function set(uint _x) public { x = _x; } }"}'
+
+# Test vulnerable contract detection
+curl -X POST https://agentic-security-auditor-270892092095.us-central1.run.app/v2/audit/code \
+  -H "Content-Type: application/json" \
+  -d '{"code": "'$(cat examples/vulnerable_reentrancy.sol | sed 's/"/\\"/g')'"}'
 ```
+
+### Real Vulnerability Validation
+The system has been validated against:
+- **Reentrancy** (Critical): Detected in `examples/vulnerable_reentrancy.sol`
+- **Access Control** (High): Missing `onlyOwner` modifiers
+- **Integer Overflow** (Medium): Unchecked arithmetic
+- **Timestamp Dependence** (Low): `block.timestamp` usage
 
 ---
 
@@ -176,10 +202,11 @@ curl -X POST https://agentic-security-auditor-270892092095.us-central1.run.app/v
 - [x] MCP tool wrappers (Etherscan, Slither, OpenRouter)
 - [x] Cloud Run deployment with v2 endpoints
 - [x] Real vulnerability detection validation
-- [ ] DevPost submission update
-- [ ] 3-minute demo video
+- [x] DevPost submission
+- [x] 3-minute demo video
 - [ ] ADK Studio integration
 - [ ] Agent Garden blueprint
+- [ ] Real-time blockchain monitoring agent
 
 ---
 
