@@ -92,6 +92,27 @@ Output: Professional Audit Report (Markdown)
 
 ---
 
+## 🤔 Why 5 Agents?
+
+Traditional security tools use a single-pass approach — either pure static analysis (Slither) or pure AI reasoning (GPT-4). Both have critical blind spots:
+
+- **Static analyzers** catch known patterns but miss novel attack vectors and business logic flaws
+- **Single AI agents** hallucinate on complex multi-step exploits and lack deterministic verification
+
+Our 5-Agent ADK pipeline solves this by **specialization + cross-verification**:
+
+| Stage | Agent | Role | Why Separate? |
+|-------|-------|------|---------------|
+| 1 | **ScannerAgent** | Fetch & normalize contract data | Ensures clean, consistent input for downstream agents |
+| 2 | **StaticAnalyzer** | Deterministic pattern matching | Catches 100% of known vulnerability classes (reentrancy, overflow) |
+| 3 | **AIReviewerAgent** | Deep reasoning & novel detection | Finds subtle business logic flaws static tools miss |
+| 4 | **ReportAgent** | Structured output generation | Guarantees consistent, professional report format |
+| 5 | **CoordinatorAgent** | Orchestration & quality control | Prevents cascade errors, retries failed stages, aggregates results |
+
+**Result**: Each agent does one thing exceptionally well, and the Coordinator ensures the whole pipeline is greater than the sum of its parts. This is the core power of Google ADK — not just calling APIs, but orchestrating specialized agents for complex multi-step missions.
+
+---
+
 ## 📊 v2 API Endpoints
 
 | Endpoint | Method | Description |
